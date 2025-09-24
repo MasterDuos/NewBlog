@@ -3,7 +3,7 @@
 <!doctype html>
 <html lang="es">
 <head>
- <meta charset="utf-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{% block title %}NewBlog{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -11,6 +11,22 @@
 <body style="font-family: system-ui, sans-serif; margin: 2rem;">
   <header>
     <h1 style="margin:0;">NewBlog</h1>
+    <nav>
+      <a href="{% url 'home' %}">Inicio</a> |
+      {% if user.is_authenticated %}
+        Bienvenido, {{ user.username }} |
+        <a href="{% url 'crear_post' %}">Nuevo Post</a> |
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">
+            Cerrar sesión
+          </button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Iniciar sesión</a> |
+        <a href="{% url 'register' %}">Registrarse</a>
+      {% endif %}
+    </nav>
     <hr />
   </header>
 
@@ -24,3 +40,5 @@
   </footer>
 </body>
 </html>
+
+
