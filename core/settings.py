@@ -122,3 +122,18 @@ import os
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "web-production-47d8.up.railway.app",
+    ".up.railway.app",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://web-production-47d8.up.railway.app",
+    "https://*.up.railway.app",
+]
