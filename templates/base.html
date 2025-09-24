@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}NewBlog{% endblock %}</title>
+</head>
+<body style="font-family: system-ui, sans-serif; margin: 2rem;">
+  <header>
+    <h1 style="margin:0;">NewBlog</h1>
+    <hr />
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <hr />
+    <small>&copy; 2025 - NewBlog</small>
+  </footer>
+</body>
+</html>
