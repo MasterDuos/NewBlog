@@ -1,5 +1,4 @@
 {% load static %}
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -8,37 +7,33 @@
   <title>{% block title %}NewBlog{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body style="font-family: system-ui, sans-serif; margin: 2rem;">
-  <header>
-    <h1 style="margin:0;">NewBlog</h1>
+<body>
+  <!-- Encabezado -->
+  <header class="site-header">
+    <h1 class="logo">📝 NewBlog</h1>
     <nav>
-      <a href="{% url 'home' %}">Inicio</a> |
+      <a href="{% url 'home' %}">Inicio</a>
       {% if user.is_authenticated %}
-        Bienvenido, {{ user.username }} |
-        <a href="{% url 'crear_post' %}">Nuevo Post</a> |
+        <span>Bienvenido, {{ user.username }}</span>
         <form action="{% url 'logout' %}" method="post" style="display:inline;">
           {% csrf_token %}
-          <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">
-            Cerrar sesión
-          </button>
+          <button type="submit" class="logout-btn">Cerrar sesión</button>
         </form>
       {% else %}
-        <a href="{% url 'login' %}">Iniciar sesión</a> |
+        <a href="{% url 'login' %}">Iniciar sesión</a>
         <a href="{% url 'register' %}">Registrarse</a>
       {% endif %}
     </nav>
-    <hr />
   </header>
 
-  <main>
+  <!-- Contenido dinámico -->
+  <main class="content">
     {% block content %}{% endblock %}
   </main>
 
-  <footer>
-    <hr />
-    <small>&copy; 2025 - NewBlog</small>
+  <!-- Pie de página -->
+  <footer class="site-footer">
+    <p>&copy; 2025 - NewBlog</p>
   </footer>
 </body>
 </html>
-
-

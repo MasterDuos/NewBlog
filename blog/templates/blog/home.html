@@ -3,21 +3,31 @@
 {% block title %}Inicio - NewBlog{% endblock %}
 
 {% block content %}
-  <h2>Posts recientes</h2>
+  <h2 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: #0066cc;">📚 Posts recientes</h2>
 
   {% if posts %}
-    <ul>
-    {% for post in posts %}
-        <li>
-        <h3>
-        <a href="{% url 'post_detalle' post.id %}">{{ post.titulo }}</a>
-    </h3>
-    <p>{{ post.contenido|truncatechars:100 }}</p>
-    <small>Publicado el {{ post.fecha_creacion|date:"d/m/Y H:i" }}</small>
-    </li>
-    <hr>
-    {% endfor %}
-    </ul>
+    <div class="post-grid">
+      {% for post in posts %}
+        <div class="post-card">
+          {% if post.imagen %}
+            <img src="{{ post.imagen.url }}" alt="{{ post.titulo }}" class="post-img">
+          {% endif %}
+
+          <div class="post-body">
+            <h3>
+              <a href="{% url 'post_detalle' post.id %}">{{ post.titulo }}</a>
+            </h3>
+            <p>{{ post.contenido|truncatechars:120 }}</p>
+            <small>
+              📅 {{ post.fecha_creacion|date:"d/m/Y H:i" }}  
+              ✍️ por <strong>{{ post.autor.username }}</strong>
+            </small>
+          </div>
+
+          <a href="{% url 'post_detalle' post.id %}" class="btn">Leer más ➝</a>
+        </div>
+      {% endfor %}
+    </div>
   {% else %}
     <p>No hay posts aún. 😢</p>
   {% endif %}

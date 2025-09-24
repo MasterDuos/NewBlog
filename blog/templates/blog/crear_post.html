@@ -1,11 +1,45 @@
 {% extends "base.html" %}
-{% block title %}Nuevo Post{% endblock %}
+
+{% block title %}Nuevo Post - NewBlog{% endblock %}
 
 {% block content %}
-  <h2>Crear nuevo post</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Publicar</button>
-  </form>
+  <div class="form-card">
+    <h2>📝 Crear nuevo post</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">➕ Publicar</button>
+    </form>
+
+    <!-- 👇 Vista previa de la imagen -->
+    <div id="preview" style="margin-top:1rem; display:none;">
+      <h4>📷 Vista previa:</h4>
+      <img id="preview-img" src="" alt="Vista previa" style="max-width:100%; border-radius:8px; margin-top:0.5rem;">
+    </div>
+  </div>
+
+  <!-- 👇 Script para mostrar la imagen antes de publicar -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const input = document.querySelector('input[type="file"]');
+      const previewDiv = document.getElementById("preview");
+      const previewImg = document.getElementById("preview-img");
+
+      if (input) {
+        input.addEventListener("change", function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              previewImg.src = e.target.result;
+              previewDiv.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+          } else {
+            previewDiv.style.display = "none";
+          }
+        });
+      }
+    });
+  </script>
 {% endblock %}
