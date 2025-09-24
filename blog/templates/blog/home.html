@@ -3,6 +3,22 @@
 {% block title %}Inicio - NewBlog{% endblock %}
 
 {% block content %}
-  <h2>Página de inicio</h2>
-  <p>¡Hola, Kevin! Tu Django está vivo 🐍⚡.</p>
+  <h2>Posts recientes</h2>
+
+  {% if posts %}
+    <ul>
+    {% for post in posts %}
+        <li>
+        <h3>
+        <a href="{% url 'post_detalle' post.id %}">{{ post.titulo }}</a>
+    </h3>
+    <p>{{ post.contenido|truncatechars:100 }}</p>
+    <small>Publicado el {{ post.fecha_creacion|date:"d/m/Y H:i" }}</small>
+    </li>
+    <hr>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>No hay posts aún. 😢</p>
+  {% endif %}
 {% endblock %}
