@@ -4,21 +4,26 @@
 
 {% block content %}
   <div class="post-detail">
+    <!-- Imagen -->
     {% if post.imagen %}
       <img src="{{ post.imagen.url }}" alt="{{ post.titulo }}" class="post-detail-img">
     {% endif %}
 
+    <!-- Título -->
     <h2>{{ post.titulo }}</h2>
 
+    <!-- Metadatos -->
     <div class="post-meta">
       📅 {{ post.fecha_creacion|date:"d/m/Y H:i" }}  
       ✍️ por <strong>{{ post.autor.username }}</strong>
     </div>
 
+    <!-- Contenido -->
     <div class="post-content">
       {{ post.contenido|linebreaks }}
     </div>
 
+    <!-- Acciones (editar / eliminar) -->
     {% if user.is_authenticated and user == post.autor %}
       <div class="actions" style="margin-top:1.5rem;">
         <a href="{% url 'editar_post' post.id %}" class="btn">✏ Editar</a>
@@ -26,15 +31,27 @@
       </div>
     {% endif %}
 
-    <!-- 🔹 Sección de reacciones -->
-    <div style="margin-top:1.5rem;">
+    <!-- 🔹 Reacciones -->
+    <div style="margin-top:2rem;">
       <strong>Reacciones:</strong><br>
-      <a href="{% url 'reaccionar' post.id 'like' %}">👍 ({{ conteos.like }})</a>
-      <a href="{% url 'reaccionar' post.id 'love' %}">❤️ ({{ conteos.love }})</a>
-      <a href="{% url 'reaccionar' post.id 'laugh' %}">😂 ({{ conteos.laugh }})</a>
+
+      <a href="{% url 'reaccionar' post.id 'like' %}"
+         class="btn {% if ya_reacciono.like %}active{% endif %}">
+        👍 ({{ conteos.like }})
+      </a>
+
+      <a href="{% url 'reaccionar' post.id 'love' %}"
+         class="btn {% if ya_reacciono.love %}active{% endif %}">
+        ❤️ ({{ conteos.love }})
+      </a>
+
+      <a href="{% url 'reaccionar' post.id 'laugh' %}"
+         class="btn {% if ya_reacciono.laugh %}active{% endif %}">
+        😂 ({{ conteos.laugh }})
+      </a>
     </div>
 
-    <!-- 🔹 Sección de comentarios -->
+    <!-- 🔹 Comentarios -->
     <div class="comments">
       <h3 style="margin-top:2rem;">💬 Comentarios</h3>
 
@@ -64,6 +81,7 @@
       {% endif %}
     </div>
 
+    <!-- Volver -->
     <div style="margin-top:2rem;">
       <a href="{% url 'home' %}" class="btn">⬅ Volver al inicio</a>
     </div>

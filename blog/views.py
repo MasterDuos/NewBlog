@@ -3,13 +3,14 @@ from django.contrib.auth.decorators import login_required
 from .models import Post, Comentario, Reaccion
 from .forms import PostForm, ComentarioForm
 
-# Página principal: lista de posts
+
+# 📌 Página principal: lista de posts
 def home(request):
     posts = Post.objects.all().order_by('-fecha_creacion')
     return render(request, "blog/home.html", {"posts": posts})
 
 
-# Detalle de un post (comentarios + reacciones)
+# 📌 Detalle de un post (comentarios + reacciones)
 def post_detalle(request, id):
     post = get_object_or_404(Post, id=id)
     comentarios = post.comentarios.all().order_by("-fecha_creacion")
@@ -36,15 +37,29 @@ def post_detalle(request, id):
         "laugh": post.reacciones.filter(tipo="laugh").count(),
     }
 
+    # 👉 Saber si el usuario ya reaccionó
+    ya_reacciono = {
+        "like": False,
+        "love": False,
+        "laugh": False,
+    }
+    if request.user.is_authenticated:
+        ya_reacciono = {
+            "like": post.reacciones.filter(usuario=request.user, tipo="like").exists(),
+            "love": post.reacciones.filter(usuario=request.user, tipo="love").exists(),
+            "laugh": post.reacciones.filter(usuario=request.user, tipo="laugh").exists(),
+        }
+
     return render(request, "blog/post_detalle.html", {
         "post": post,
         "comentarios": comentarios,
         "form": form,
         "conteos": conteos,
+        "ya_reacciono": ya_reacciono,
     })
 
 
-# Crear post (solo logueados)
+# 📌 Crear post (solo logueados)
 @login_required
 def crear_post(request):
     if request.method == "POST":
@@ -59,7 +74,7 @@ def crear_post(request):
     return render(request, "blog/crear_post.html", {"form": form})
 
 
-# Editar post (solo autor)
+# 📌 Editar post (solo autor)
 @login_required
 def editar_post(request, id):
     post = get_object_or_404(Post, id=id)
@@ -75,7 +90,7 @@ def editar_post(request, id):
     return render(request, "blog/editar_post.html", {"form": form, "post": post})
 
 
-# Eliminar post (solo autor)
+# 📌 Eliminar post (solo autor)
 @login_required
 def eliminar_post(request, id):
     post = get_object_or_404(Post, id=id)
@@ -87,7 +102,7 @@ def eliminar_post(request, id):
     return render(request, "blog/eliminar_post.html", {"post": post})
 
 
-# 👉 Reaccionar (toggle)
+# 📌 Reaccionar (toggle)
 @login_required
 def reaccionar(request, id, tipo):
     post = get_object_or_404(Post, id=id)

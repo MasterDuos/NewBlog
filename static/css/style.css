@@ -286,3 +286,9 @@ form input[type="submit"]:hover {
 .comment-form {
   margin-top: 1.5rem;
 }
+
+.btn.active {
+  background: #ffcc00;  /* fondo amarillo de resaltado */
+  color: #000;          /* texto oscuro */
+  font-weight: bold;
+}
