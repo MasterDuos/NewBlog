@@ -10,11 +10,11 @@ def home(request):
     return render(request, "blog/home.html", {"posts": posts})
 
 
-# 👉 Detalle del post (comentarios + reacciones + votos)
+# 👉 Detalle del post (comentarios + reacciones + votos + destacados)
 def post_detalle(request, id):
     post = get_object_or_404(Post, id=id)
 
-    # Manejo de comentarios (si se envía el formulario)
+    # Formulario de comentario
     if request.method == "POST" and "comentario" in request.POST:
         if request.user.is_authenticated:
             form = ComentarioForm(request.POST)
@@ -29,9 +29,10 @@ def post_detalle(request, id):
     else:
         form = ComentarioForm()
 
-    # Comentarios ordenados por votos_totales (ranking)
-    comentarios = sorted(
-        post.comentarios.all(),
+    # 🔹 Separar destacados y normales
+    destacados = post.comentarios.filter(destacado=True).order_by("-fecha_creacion")
+    normales = sorted(
+        post.comentarios.filter(destacado=False),
         key=lambda c: c.votos_totales(),
         reverse=True
     )
@@ -43,7 +44,7 @@ def post_detalle(request, id):
         "laugh": post.reacciones.filter(tipo="laugh").count(),
     }
 
-    # Saber si el usuario ya reaccionó (para marcar botón activo)
+    # Saber si el usuario ya reaccionó
     ya_reacciono = {"like": False, "love": False, "laugh": False}
     if request.user.is_authenticated:
         ya_reacciono = {
@@ -54,7 +55,8 @@ def post_detalle(request, id):
 
     return render(request, "blog/post_detalle.html", {
         "post": post,
-        "comentarios": comentarios,
+        "destacados": destacados,   # 👈 sección especial
+        "comentarios": normales,    # 👈 resto abajo
         "form": form,
         "conteos": conteos,
         "ya_reacciono": ya_reacciono,
@@ -65,7 +67,7 @@ def post_detalle(request, id):
 @login_required
 def votar_comentario(request, comentario_id, valor):
     comentario = get_object_or_404(Comentario, id=comentario_id)
-    
+
     # Convertimos "up"/"down" a 1/-1
     valor = 1 if valor == "up" else -1
 
@@ -83,7 +85,6 @@ def votar_comentario(request, comentario_id, valor):
             voto.save()
 
     return redirect("post_detalle", id=comentario.post.id)
-
 
 
 # 📌 Crear post (solo logueados)
@@ -137,3 +138,39 @@ def reaccionar(request, id, tipo):
     if not creada:  # si ya existía, la quitamos (toggle)
         reaccion.delete()
     return redirect("post_detalle", id=post.id)
+
+
+# 📌 Reportar comentario
+@login_required
+def reportar_comentario(request, comentario_id):
+    comentario = get_object_or_404(Comentario, id=comentario_id)
+    comentario.reportado = True
+    comentario.save()
+    return redirect("post_detalle", id=comentario.post.id)
+
+
+# 📌 Eliminar comentario (solo autor del comentario o admin)
+@login_required
+def eliminar_comentario(request, comentario_id):
+    comentario = get_object_or_404(Comentario, id=comentario_id)
+    if request.user == comentario.autor or request.user.is_superuser:
+        comentario.delete()
+    return redirect("post_detalle", id=comentario.post.id)
+
+
+# 📌 Marcar destacado (solo admin)
+@login_required
+def marcar_destacado(request, comentario_id):
+    comentario = get_object_or_404(Comentario, id=comentario_id)
+
+    if not request.user.is_superuser:
+        return redirect("post_detalle", id=comentario.post.id)
+
+    # 🔹 Primero desmarcamos otros comentarios destacados de ese post
+    Comentario.objects.filter(post=comentario.post, destacado=True).exclude(id=comentario.id).update(destacado=False)
+
+    # 🔹 Marcamos solo el actual
+    comentario.destacado = True
+    comentario.save()
+
+    return redirect("post_detalle", id=comentario.post.id)

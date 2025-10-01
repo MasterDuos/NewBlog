@@ -34,19 +34,37 @@
     <!-- 🔹 Reacciones -->
     <div style="margin-top:2rem;">
       <strong>Reacciones:</strong><br>
-      <a href="{% url 'reaccionar' post.id 'like' %}" class="btn">👍 ({{ conteos.like }})</a>
-      <a href="{% url 'reaccionar' post.id 'love' %}" class="btn">❤️ ({{ conteos.love }})</a>
-      <a href="{% url 'reaccionar' post.id 'laugh' %}" class="btn">😂 ({{ conteos.laugh }})</a>
+      <a href="{% url 'reaccionar' post.id 'like' %}" class="btn {% if ya_reacciono.like %}active{% endif %}">👍 ({{ conteos.like }})</a>
+      <a href="{% url 'reaccionar' post.id 'love' %}" class="btn {% if ya_reacciono.love %}active{% endif %}">❤️ ({{ conteos.love }})</a>
+      <a href="{% url 'reaccionar' post.id 'laugh' %}" class="btn {% if ya_reacciono.laugh %}active{% endif %}">😂 ({{ conteos.laugh }})</a>
     </div>
 
-    <!-- 🔹 Mejores comentarios -->
+    <!-- 🔹 Comentarios destacados -->
     <div class="comments">
-      <h3 style="margin-top:2rem;">💬 Mejores comentarios</h3>
+      <h3 style="margin-top:2rem;">⭐ Comentarios destacados</h3>
+      {% if destacados %}
+        <ul class="comment-list">
+          {% for comentario in destacados %}
+            <li class="comment-item destacado" style="border:2px solid gold; padding:10px; margin-bottom:10px;">
+              <strong>{{ comentario.autor.username }}</strong> dijo:<br>
+              {{ comentario.contenido|linebreaks }}
+              <br>
+              <small style="color:#777;">📅 {{ comentario.fecha_creacion|date:"d/m/Y H:i" }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No hay comentarios destacados.</p>
+      {% endif %}
+    </div>
 
+    <!-- 🔹 Resto de comentarios -->
+    <div class="comments">
+      <h3 style="margin-top:2rem;">💬 Comentarios</h3>
       {% if comentarios %}
         <ul class="comment-list">
           {% for comentario in comentarios %}
-            <li class="comment-item">
+            <li class="comment-item {% if comentario.destacado %}destacado{% endif %}">
               <strong>{{ comentario.autor.username }}</strong> dijo:<br>
               {{ comentario.contenido|linebreaks }}
               <br>
@@ -54,10 +72,19 @@
               <br>
               <strong>Votos:</strong> {{ comentario.votos_totales }}
               <br>
+
               {% if user.is_authenticated %}
+                <!-- Votar -->
                 <a href="{% url 'votar_comentario' comentario.id 'up' %}" class="btn">👍</a>
                 <a href="{% url 'votar_comentario' comentario.id 'down' %}" class="btn delete">👎</a>
 
+                <!-- Reportar -->
+                <a href="{% url 'reportar_comentario' comentario.id %}" class="btn">🚩 Reportar</a>
+
+                <!-- Eliminar (solo autor o admin) -->
+                {% if user == comentario.autor or user.is_superuser %}
+                  <a href="{% url 'eliminar_comentario' comentario.id %}" class="btn delete">🗑 Eliminar</a>
+                {% endif %}
               {% endif %}
             </li>
           {% endfor %}
@@ -84,3 +111,23 @@
     </div>
   </div>
 {% endblock %}
+
+<!-- Comentarios destacados -->
+{% if destacados %}
+  <ul>
+    {% for comentario in destacados %}
+      <li style="border:2px solid gold; padding:10px;">
+        ⭐ <strong>{{ comentario.autor.username }}</strong>: {{ comentario.contenido }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No hay comentarios destacados.</p>
+{% endif %}
+
+<!-- Comentarios normales -->
+{% for comentario in comentarios %}
+  <li>
+    <strong>{{ comentario.autor.username }}</strong>: {{ comentario.contenido }}
+  </li>
+{% endfor %}

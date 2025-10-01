@@ -18,6 +18,8 @@ class Comentario(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     contenido = models.TextField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    reportado = models.BooleanField(default=False)
+    destacado = models.BooleanField(default=False)
 
     def votos_totales(self):
         return self.votos.filter(valor=1).count() - self.votos.filter(valor=-1).count()

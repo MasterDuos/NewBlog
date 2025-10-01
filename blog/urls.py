@@ -16,4 +16,12 @@ urlpatterns = [
 
     # 📌 Votos en comentarios
     path("comentario/<int:comentario_id>/votar/<str:valor>/", views.votar_comentario, name="votar_comentario"),
+    
+    # 📌 Reportar comentario 
+    path("comentario/<int:comentario_id>/reportar/", views.reportar_comentario, name="reportar_comentario"),
+    path("comentario/<int:comentario_id>/eliminar/", views.eliminar_comentario, name="eliminar_comentario"),
+
+    # 📌 Destacado
+    path("comentario/<int:comentario_id>/destacar/", views.marcar_destacado, name="marcar_destacado"),
+
 ]

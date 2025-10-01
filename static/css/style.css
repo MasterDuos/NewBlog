@@ -292,3 +292,10 @@ form input[type="submit"]:hover {
   color: #000;          /* texto oscuro */
   font-weight: bold;
 }
+
+.comment-item.destacado {
+  background: #fff9c4; /* amarillo suave */
+  border-left: 4px solid gold;
+  padding: 10px;
+  margin-bottom: 10px;
+}
