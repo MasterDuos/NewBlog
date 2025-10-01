@@ -26,3 +26,4 @@ EXPOSE 8000
 
 # Comando de arranque
 CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+
