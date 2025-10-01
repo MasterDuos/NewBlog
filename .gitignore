@@ -1,2 +1,5 @@
+cat > -.gitignore << EOF
+
+
 venv/
 .vscode/
