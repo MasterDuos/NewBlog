@@ -61,3 +61,16 @@ class Reaccion(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} reaccionó {self.tipo} a {self.post.titulo}"
+
+
+class Notificacion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notificaciones")
+    actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="acciones")
+    comentario = models.ForeignKey("Comentario", on_delete=models.CASCADE, null=True, blank=True)
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, null=True, blank=True)
+    mensaje = models.CharField(max_length=255)
+    leido = models.BooleanField(default=False)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notificación para {self.usuario.username}: {self.mensaje}"

@@ -24,4 +24,8 @@ urlpatterns = [
     # 📌 Destacado
     path("comentario/<int:comentario_id>/destacar/", views.marcar_destacado, name="marcar_destacado"),
 
+    path("notificaciones/", views.notificaciones, name="notificaciones"),
+    path("notificaciones/<int:id>/leida/", views.marcar_leida, name="marcar_leida"),
+    path("comentario/<int:comentario_id>/votar/<str:valor>/", views.votar_comentario, name="votar_comentario"),  # 'up'/'down'
+
 ]

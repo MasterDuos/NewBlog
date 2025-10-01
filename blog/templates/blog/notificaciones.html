@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Notificaciones - NewBlog{% endblock %}
+
+{% block content %}
+  <div class="notifications">
+    <h2>🔔 Notificaciones</h2>
+
+    {% if notificaciones %}
+      <ul class="noti-list">
+        {% for n in notificaciones %}
+          <li class="noti-item" style="margin-bottom:12px; padding:10px; border:1px solid #eee; border-left:5px solid {% if n.leido %}#ccc{% else %}#f39c12{% endif %};">
+            <div>
+              <strong>{{ n.actor.username }}</strong> te mencionó
+              {% if n.post %} en <a href="{% url 'post_detalle' n.post.id %}">{{ n.post.titulo }}</a>{% endif %}
+              {% if n.comentario %} – <em>comentario #{{ n.comentario.id }}</em>{% endif %}
+            </div>
+            <div style="color:#777; font-size:0.9em;">{{ n.fecha|date:"d/m/Y H:i" }}</div>
+            <div style="margin-top:6px;">{{ n.mensaje }}</div>
+
+            {% if not n.leido %}
+              <div style="margin-top:8px;">
+                <a class="btn" href="{% url 'marcar_leida' n.id %}">Marcar como leído</a>
+              </div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No tienes notificaciones por ahora 🎉</p>
+    {% endif %}
+  </div>
+{% endblock %}

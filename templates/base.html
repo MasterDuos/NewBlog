@@ -6,6 +6,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{% block title %}NewBlog{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    /* 🔔 Badge de notificaciones */
+    .noti-badge {
+      background: red;
+      color: white;
+      font-size: 0.8rem;
+      padding: 2px 6px;
+      border-radius: 50%;
+      margin-left: 4px;
+    }
+    .site-header nav a {
+      margin-right: 12px;
+    }
+  </style>
 </head>
 <body>
   <!-- Encabezado -->
@@ -16,6 +30,18 @@
 
       {% if user.is_authenticated %}
         <a href="{% url 'crear_post' %}" class="btn">➕ Nuevo Post</a>
+
+        <!-- 🔔 Notificaciones -->
+        {% if user.is_authenticated %}
+  <a href="{% url 'notificaciones' %}">
+    🔔 Notificaciones
+    {% if notificaciones_no_leidas > 0 %}
+      <span class="noti-badge">{{ notificaciones_no_leidas }}</span>
+    {% endif %}
+  </a>
+{% endif %}
+
+
         <span>👋 Hola, {{ user.username }}</span>
         <form action="{% url 'logout' %}" method="post" style="display:inline;">
           {% csrf_token %}
