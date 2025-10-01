@@ -1,21 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Post, Comentario, Reaccion
+from .models import Post, Comentario, Reaccion, VotoComentario
 from .forms import PostForm, ComentarioForm
 
 
-# 📌 Página principal: lista de posts
+# 👉 Página principal
 def home(request):
-    posts = Post.objects.all().order_by('-fecha_creacion')
+    posts = Post.objects.all().order_by("-fecha_creacion")
     return render(request, "blog/home.html", {"posts": posts})
 
 
-# 📌 Detalle de un post (comentarios + reacciones)
+# 👉 Detalle del post (comentarios + reacciones + votos)
 def post_detalle(request, id):
     post = get_object_or_404(Post, id=id)
-    comentarios = post.comentarios.all().order_by("-fecha_creacion")
 
-    # 👉 Manejo de comentarios
+    # Manejo de comentarios (si se envía el formulario)
     if request.method == "POST" and "comentario" in request.POST:
         if request.user.is_authenticated:
             form = ComentarioForm(request.POST)
@@ -30,19 +29,22 @@ def post_detalle(request, id):
     else:
         form = ComentarioForm()
 
-    # 👉 Conteo de reacciones
+    # Comentarios ordenados por votos_totales (ranking)
+    comentarios = sorted(
+        post.comentarios.all(),
+        key=lambda c: c.votos_totales(),
+        reverse=True
+    )
+
+    # Conteo de reacciones
     conteos = {
         "like": post.reacciones.filter(tipo="like").count(),
         "love": post.reacciones.filter(tipo="love").count(),
         "laugh": post.reacciones.filter(tipo="laugh").count(),
     }
 
-    # 👉 Saber si el usuario ya reaccionó
-    ya_reacciono = {
-        "like": False,
-        "love": False,
-        "laugh": False,
-    }
+    # Saber si el usuario ya reaccionó (para marcar botón activo)
+    ya_reacciono = {"like": False, "love": False, "laugh": False}
     if request.user.is_authenticated:
         ya_reacciono = {
             "like": post.reacciones.filter(usuario=request.user, tipo="like").exists(),
@@ -57,6 +59,31 @@ def post_detalle(request, id):
         "conteos": conteos,
         "ya_reacciono": ya_reacciono,
     })
+
+
+# 👉 Votar comentario (toggle)
+@login_required
+def votar_comentario(request, comentario_id, valor):
+    comentario = get_object_or_404(Comentario, id=comentario_id)
+    
+    # Convertimos "up"/"down" a 1/-1
+    valor = 1 if valor == "up" else -1
+
+    voto, creado = VotoComentario.objects.get_or_create(
+        comentario=comentario,
+        usuario=request.user,
+        defaults={"valor": valor}
+    )
+
+    if not creado:
+        if voto.valor == valor:
+            voto.delete()
+        else:
+            voto.valor = valor
+            voto.save()
+
+    return redirect("post_detalle", id=comentario.post.id)
+
 
 
 # 📌 Crear post (solo logueados)

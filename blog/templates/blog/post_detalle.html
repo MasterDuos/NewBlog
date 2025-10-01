@@ -34,26 +34,14 @@
     <!-- 🔹 Reacciones -->
     <div style="margin-top:2rem;">
       <strong>Reacciones:</strong><br>
-
-      <a href="{% url 'reaccionar' post.id 'like' %}"
-         class="btn {% if ya_reacciono.like %}active{% endif %}">
-        👍 ({{ conteos.like }})
-      </a>
-
-      <a href="{% url 'reaccionar' post.id 'love' %}"
-         class="btn {% if ya_reacciono.love %}active{% endif %}">
-        ❤️ ({{ conteos.love }})
-      </a>
-
-      <a href="{% url 'reaccionar' post.id 'laugh' %}"
-         class="btn {% if ya_reacciono.laugh %}active{% endif %}">
-        😂 ({{ conteos.laugh }})
-      </a>
+      <a href="{% url 'reaccionar' post.id 'like' %}" class="btn">👍 ({{ conteos.like }})</a>
+      <a href="{% url 'reaccionar' post.id 'love' %}" class="btn">❤️ ({{ conteos.love }})</a>
+      <a href="{% url 'reaccionar' post.id 'laugh' %}" class="btn">😂 ({{ conteos.laugh }})</a>
     </div>
 
-    <!-- 🔹 Comentarios -->
+    <!-- 🔹 Mejores comentarios -->
     <div class="comments">
-      <h3 style="margin-top:2rem;">💬 Comentarios</h3>
+      <h3 style="margin-top:2rem;">💬 Mejores comentarios</h3>
 
       {% if comentarios %}
         <ul class="comment-list">
@@ -63,6 +51,14 @@
               {{ comentario.contenido|linebreaks }}
               <br>
               <small style="color:#777;">📅 {{ comentario.fecha_creacion|date:"d/m/Y H:i" }}</small>
+              <br>
+              <strong>Votos:</strong> {{ comentario.votos_totales }}
+              <br>
+              {% if user.is_authenticated %}
+                <a href="{% url 'votar_comentario' comentario.id 'up' %}" class="btn">👍</a>
+                <a href="{% url 'votar_comentario' comentario.id 'down' %}" class="btn delete">👎</a>
+
+              {% endif %}
             </li>
           {% endfor %}
         </ul>
@@ -70,6 +66,7 @@
         <p>No hay comentarios todavía. Sé el primero en comentar 🎉</p>
       {% endif %}
 
+      <!-- Formulario de nuevo comentario -->
       {% if user.is_authenticated %}
         <form method="post" class="comment-form">
           {% csrf_token %}
