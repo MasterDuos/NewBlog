@@ -125,12 +125,14 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
+import os
+
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "web-production-47d8.up.railway.app",
-    "*.up.railway.app",
+    'localhost',
+    '127.0.0.1',
+    '.railway.app'
 ]
+
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
